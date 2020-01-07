@@ -12,7 +12,7 @@
 -include("erlwater.hrl").
 
 %% API
--export([ip_to_binary/1, get_mac_address/0]).
+-export([ip_to_binary/1, get_mac_address/0, activate_socket/1, optimize_socket/1]).
 
 
 -spec ip_to_binary(inet:ip_address() | undefined |
@@ -43,3 +43,13 @@ filter_interfaces(Props) ->
     [0, 0, 0, 0, 0, 0] -> false;
     _ -> true
   end.
+
+activate_socket(Sock) ->
+  ok = inet:setopts(Sock, [{active, true}]),
+  Sock.
+
+optimize_socket(Sock) ->
+  {ok, [{sndbuf, SndBufferSize}, {recbuf, RecBufferSize}]} =
+    inet:getopts(Sock, [sndbuf, recbuf]), %% assert
+  ok = inet:setopts(Sock, [{buffer, max(RecBufferSize, SndBufferSize)}]),
+  Sock.
