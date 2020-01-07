@@ -59,14 +59,13 @@ consistent_select(Seed, Ls) ->
   seed_select(Seed, Ls).
 
 
+random_select([]) ->
+  false;
+random_select([I]) ->
+  I;
 random_select(Ls) ->
   seed_select(erlwater_time:microseconds(), Ls).
 
-
-seed_select(_, []) ->
-  false;
-seed_select(_, [I]) ->
-  I;
 seed_select(Seed, Ls) ->
   I = erlang:phash2(Seed, length(Ls)),
   lists:nth(I + 1, Ls).
