@@ -20,11 +20,11 @@
 -define(NON_NEG_INTEGER, "non-negative integer").
 -define(PROPLIST, "proplist").
 
-assert(Expression, Return, Error) ->
+assert(Expression, Arg, ErrorReason) ->
   if Expression ->
-    Return;
+    Arg;
   true ->
-    erlang:error(Error)
+    erlang:error(ErrorReason, [Arg])
   end.
 
 is_boolean({Key, Value} = Arg) ->
