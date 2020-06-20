@@ -10,7 +10,7 @@
 -author("Alpha Umaru Shaw").
 
 %% API
--export([is_boolean/1, is_number/1, is_integer/1, is_string/1, is_proplist/1, is_positive_int/1, is_non_negative_int/1]).
+-export([assert/3, is_boolean/1, is_number/1, is_integer/1, is_string/1, is_proplist/1, is_positive_int/1, is_non_negative_int/1]).
 
 -define(BOOLEAN, "boolean").
 -define(NUMBER, "number").
@@ -19,6 +19,13 @@
 -define(POS_INTEGER, "positive integer").
 -define(NON_NEG_INTEGER, "non-negative integer").
 -define(PROPLIST, "proplist").
+
+assert(Expression, Return, Error) ->
+  if Expression ->
+    Return;
+  true ->
+    erlang:error(Error)
+  end.
 
 is_boolean({Key, Value} = Arg) ->
   assert_type(Key, Arg, Value, fun() -> erlang:is_boolean(Value) end, ?BOOLEAN);
