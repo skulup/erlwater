@@ -1,5 +1,5 @@
 {application, erlwater,
-  [{description, "An OTP library"},
+  [{description, "Geneal utilities for Erlang/Elixir"},
     {vsn, "0.1.0"},
     {registered, []},
     {applications,
@@ -8,7 +8,6 @@
       ]},
     {env, []},
     {modules, []},
-
     {licenses, ["Apache 2.0"]},
-    {links, []}
+    {links, [{"GitHub", "https://github.com/skulup/erlwater"}]}
   ]}.
