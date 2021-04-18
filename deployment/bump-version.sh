@@ -12,14 +12,20 @@ NEXT_VSN=${NEXT_VSN::-1}
 
 printf "New version=$NEXT_VSN\n"
 
-echo "$LINE_TO_REPLACE"
 NEW_LINE="${LINE_TO_REPLACE/$OLD_VSN/$NEXT_VSN}"
 sed -i "s~$LINE_TO_REPLACE~$NEW_LINE~g" src/erlwater.app.src
 
-printf "Creating local tag: $NEXT_VSN"
-git tag -d $NEXT_VSN
-git add $NEXT_VSN
+printf "Committing the updated files to the master branch\n"
+git add .
+git commit -m "Version bumped to $NEXT_VSN"
+git push -u origin master
 
-printf "Pushing the remote tag: $NEXT_VSN"
+printf "Creating the local tag: $NEXT_VSN\n"
+git tag -d $NEXT_VSN
+git tag $NEXT_VSN
+
+printf "Pushing the remote tag: $NEXT_VSN\n"
 
 git push origin $NEXT_VSN
+
+printf "Your release versioned '$NEXT_VSN' is successfully created!!"
