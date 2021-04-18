@@ -28,4 +28,4 @@ printf "Pushing the remote tag: $NEXT_VSN\n"
 
 git push origin $NEXT_VSN
 
-printf "Your release versioned '$NEXT_VSN' is successfully created!!"
+printf "Your release versioned '$NEXT_VSN' is successfully created!!\n"
