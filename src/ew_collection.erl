@@ -6,12 +6,12 @@
 %%% Company: Skulup Ltd
 %%% Copyright: (C) 2019
 %%%-------------------------------------------------------------------
--module(erlwater_collection).
+-module(ew_collection).
 -author("Alpha Umaru Shaw").
 
 %% API
 -export([random_select/1, consistent_select/2, proplist_flattens/1, proplist_to_map/1,
-  proplist_keys/1, contiguous_items_to_proplist/1, to_proplist/2]).
+         proplist_keys/1, contiguous_items_to_proplist/1, to_proplist/2]).
 
 proplist_keys(Ls) ->
   proplist_keys(Ls, []).
@@ -64,7 +64,7 @@ random_select([]) ->
 random_select([I]) ->
   I;
 random_select(Ls) ->
-  seed_select(erlwater_time:microseconds(), Ls).
+  seed_select(ew_time:micros(), Ls).
 
 seed_select(Seed, Ls) ->
   I = erlang:phash2(Seed, length(Ls)),

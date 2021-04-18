@@ -6,8 +6,10 @@
 %%% Company: Skulup Ltd
 %%% Copyright: (C) 2020
 %%%-------------------------------------------------------------------
--module(erlwater_assertions).
+-module(ew_assertions).
 -author("Alpha Umaru Shaw").
+
+-include("erlwater.hrl").
 
 %% API
 -export([assert/3, is_boolean/1, is_number/1, is_integer/1, is_string/1, is_proplist/1, is_positive_int/1, is_non_negative_int/1]).
@@ -20,11 +22,11 @@
 -define(NON_NEG_INTEGER, "non-negative integer").
 -define(PROPLIST, "proplist").
 
-assert(Expression, Arg, ErrorReason) ->
+assert(Expression, Arg, Error) ->
   if Expression ->
     Arg;
-  true ->
-    erlang:error(ErrorReason, [Arg])
+    true ->
+      erlang:error(Error, [Arg])
   end.
 
 is_boolean({Key, Value} = Arg) ->
@@ -50,7 +52,7 @@ is_integer(Value) ->
   Value.
 
 is_positive_int({Key, Value} = Arg) ->
-  assert_type(Key, Arg, Value, fun() ->
+  assert_type(                                      Key, Arg, Value, fun() ->
     erlang:is_integer(Value) andalso Value > 0 end, ?POS_INTEGER);
 
 is_positive_int(Value) ->
@@ -58,7 +60,7 @@ is_positive_int(Value) ->
   Value.
 
 is_non_negative_int({Key, Value} = Arg) ->
-  assert_type(Key, Arg, Value, fun() ->
+  assert_type(                                       Key, Arg, Value, fun() ->
     erlang:is_integer(Value) andalso Value >= 0 end, ?NON_NEG_INTEGER);
 
 is_non_negative_int(Value) ->
@@ -66,7 +68,7 @@ is_non_negative_int(Value) ->
   Value.
 
 is_string({Key, Value} = Arg) ->
-  assert_type(Key, Arg, Value, fun() ->
+  assert_type(                                            Key, Arg, Value, fun() ->
     is_binary(Value) or io_lib:printable_list(Value) end, ?STRING);
 
 is_string(Value) ->
@@ -75,7 +77,7 @@ is_string(Value) ->
 
 is_proplist({Key, Value} = Arg) ->
   assert_type(Key, Arg, Value,
-    fun() -> is_a_prop_list(Value) end, ?PROPLIST);
+              fun() -> is_a_prop_list(Value) end, ?PROPLIST);
 
 is_proplist(Value) ->
   ?MODULE:is_proplist({Value, Value}),
@@ -96,8 +98,8 @@ is_a_prop_list(Ls) when is_list(Ls) ->
   lists:all(
     fun({_, _}) ->
       true;
-      (_) ->
-        false
+       (_) ->
+         false
     end, Ls);
 is_a_prop_list(_) -> false.
 

@@ -6,7 +6,7 @@
 %%% Company: Skulup Ltd
 %%% Copyright: (C) 2019
 %%%-------------------------------------------------------------------
--module(erlwater_concurrency).
+-module(ew_concurrency).
 -author("Alpha Umaru Shaw").
 
 %% API
@@ -23,11 +23,11 @@ least_busy_process([Item], _) ->
   Item;
 least_busy_process(Items, PidProvider) when is_list(Items), is_function(PidProvider) ->
   {Processes, TotalQueueLen} = lists:foldl(
-    fun(Item, {Acc, Len}) ->
-      Pid = PidProvider(Item),
-      {message_queue_len, QLen} = erlang:process_info(Pid, message_queue_len),
-      {[{Pid, QLen} | Acc], Len + QLen}
-    end
+      fun(Item, {Acc, Len}) ->
+        Pid = PidProvider(Item),
+        {message_queue_len, QLen} = erlang:process_info(Pid, message_queue_len),
+        {[{Pid, QLen} | Acc], Len + QLen}
+      end
     , {[], 0}, Items),
   if TotalQueueLen > 0 ->
     ProcessesCount = length(Processes),
@@ -41,8 +41,8 @@ least_busy_process(Items, PidProvider) when is_list(Items), is_function(PidProvi
     error_logger:info_msg(
       "~nQueue Length Stats:~n"
       ++ "\tMean: ~p~n"
-        ++ "\tMean Deviation: ~p~n"
-        ++ "\tStandard Deviation: ~p",
+         ++ "\tMean Deviation: ~p~n"
+            ++ "\tStandard Deviation: ~p",
       [erlwater:round(MeanLen, 3), erlwater:round(MeanDeviation, 3), erlwater:round(StdMeanDeviation, 3)]);
     true -> ok
   end,

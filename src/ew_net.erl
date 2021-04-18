@@ -6,7 +6,7 @@
 %%% Company: Skulup Ltd
 %%% Copyright: (C) 2019
 %%%-------------------------------------------------------------------
--module(erlwater_net).
+-module(ew_net).
 -author("Alpha Umaru Shaw").
 
 -include("erlwater.hrl").
@@ -16,7 +16,7 @@
 
 
 -spec ip_to_binary(inet:ip_address() | undefined |
-{inet:ip_address(), inet:port_number()}) -> binary().
+                   {inet:ip_address(), inet:port_number()}) -> binary().
 ip_to_binary({IP, _Port}) ->
   ip_to_binary(IP);
 ip_to_binary(?Undef) ->
@@ -25,11 +25,10 @@ ip_to_binary(Ip) ->
   list_to_binary(inet:ntoa(Ip)).
 
 
-
 get_mac_address() ->
   {ok, Ls} = inet:getifaddrs(),
   IFaceProps = hd([Props || {Inf, Props} <- Ls,
-    Inf /= "lo", filter_interfaces(Props)]),
+                   Inf /= "lo", filter_interfaces(Props)]),
   case proplists:get_value(hwaddr, IFaceProps) of
     undefined -> {error, no_mac_address};
     Addr ->
@@ -50,6 +49,6 @@ activate_socket(Sock) ->
 
 optimize_socket(Sock) ->
   {ok, [{sndbuf, SndBufferSize}, {recbuf, RecBufferSize}]} =
-    inet:getopts(Sock, [sndbuf, recbuf]), %% assert
+  inet:getopts(Sock, [sndbuf, recbuf]), %% assert
   ok = inet:setopts(Sock, [{buffer, max(RecBufferSize, SndBufferSize)}]),
   Sock.

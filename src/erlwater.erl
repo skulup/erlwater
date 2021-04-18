@@ -2,90 +2,110 @@
 
 -include("erlwater.hrl").
 
--export([round/2, safe_binary_to_term/1, to_integer/1, to_float/1, to_boolean/1, to_binary/1, term_to_base64/1, base64_to_term/1, tuple_to_binary/1]).
+-export([round/2]).
+-export([to_integer/1, to_float/1, to_boolean/1, to_binary/1, to_base64/1, base64_to_term/1, safe_binary_to_term/1]).
+-export([assert/3, is_boolean/1, is_number/1, is_integer/1, is_string/1, is_proplist/1, is_positive_int/1, is_non_negative_int/1]).
+-export([get_env/1, get_bool_env/1, get_int_env/1, get_int_env/2, get_float_env/1, get_float_env/2, get_binary_env/1, get_binary_env/2]).
+-export([get_bool_app_env/2, get_int_app_env/2, get_int_app_env/3, get_float_app_env/2, get_float_app_env/3, get_binary_app_env/2, get_binary_app_env/3]).
 
+%% Mathematics
 
 round(Number, Precision) ->
-  P = math:pow(10, Precision),
-  round(Number * P) / P.
+  ew_math:round(Number, Precision).
 
+%% Conversions
 
-safe_binary_to_term(B) when is_binary(B) ->
-  erlang:binary_to_term(B, [safe]).
+to_integer(V) ->
+  ew_convert:to_integer(V).
 
+to_float(V) ->
+  ew_convert:to_float(V).
 
-to_integer(?Undef) ->
-  ?Undef;
-to_integer(I) when is_integer(I) ->
-  I;
-to_integer(B) when is_binary(B) ->
-  binary_to_integer(B);
-to_integer(S) when is_list(S) ->
-  list_to_integer(S).
+to_boolean(V) ->
+  ew_convert:to_boolean(V).
 
+to_binary(V) ->
+  ew_convert:to_binary(V).
 
-to_float(?Undef) ->
-  ?Undef;
-to_float(F) when is_float(F) ->
-  F;
-to_float(B) when is_binary(B) ->
-  B2 =
-    case binary:match(B, [<<$.>>]) of
-      nomatch ->
-        <<B/binary, $., $0>>;
-      _ ->
-        B
-    end,
-  binary_to_float(B2);
-to_float(S) when is_list(S) ->
-  list_to_float(S).
+to_base64(V) ->
+  ew_convert:to_base64(V).
 
+base64_to_term(V) ->
+  ew_convert:base64_to_term(V).
 
-to_boolean(B) when is_boolean(B) ->
-  B;
-to_boolean(?Undef) ->
-  false;
-to_boolean(N) when is_number(N) ->
-  N > 0;
-to_boolean(<<"0">>) ->
-  false;
-to_boolean(<<"1">>) ->
-  true;
-to_boolean("0") ->
-  false;
-to_boolean("1") ->
-  true.
+safe_binary_to_term(B) ->
+  ew_convert:safe_binary_to_term(B).
 
+%% Applications Environment Variables
 
-to_binary(B) when is_binary(B) ->
-  B;
-to_binary(S) when is_list(S) ->
-  list_to_binary(S);
-to_binary(I) when is_integer(I) ->
-  integer_to_binary(I);
-to_binary(F) when is_float(F) ->
-  float_to_binary(F);
-to_binary(A) when is_atom(A) ->
-  atom_to_binary(A, utf8);
-to_binary(T) ->
-  term_to_binary(T).
+get_bool_app_env(App, Name) ->
+  ew_app:get_bool_env(App, Name).
 
+get_int_app_env(App, Name) ->
+  ew_app:get_int_env(App, Name).
 
-tuple_to_binary(T) when is_tuple(T) ->
-  iolist_to_binary(tuple_to_list(T)).
+get_int_app_env(App, Name, Def) ->
+  ew_app:get_int_env(App, Name, Def).
 
+get_float_app_env(App, Name) ->
+  ew_app:get_float_env(App, Name).
 
-term_to_base64(Term) ->
-  Bin = term_to_binary(Term),
-  base64:encode(Bin).
+get_float_app_env(App, Name, Def) ->
+  ew_app:get_float_env(App, Name, Def).
 
+get_binary_app_env(App, Name) ->
+  ew_app:get_binary_env(App, Name).
 
-base64_to_term(Data) ->
-  case catch base64:decode(Data) of
-    {'EXIT', _} -> error;
-    Value ->
-      case catch safe_binary_to_term(Value) of
-        {'EXIT', _} -> error;
-        Term -> Term
-      end
-  end.
+get_binary_app_env(App, Name, Def) ->
+  ew_app:get_binary_env(App, Name, Def).
+
+%% OS Environment Variables
+
+get_env(Name) ->
+  ew_os:get_env(Name).
+
+get_bool_env(Name) ->
+  ew_os:get_bool_env(Name).
+
+get_int_env(Name) ->
+  ew_os:get_int_env(Name).
+
+get_int_env(Name, Def) ->
+  ew_os:get_int_env(Name, Def).
+
+get_float_env(Name) ->
+  ew_os:get_float_env(Name).
+
+get_float_env(Name, Def) ->
+  ew_os:get_float_env(Name, Def).
+
+get_binary_env(Name) ->
+  ew_os:get_binary_env(Name).
+
+get_binary_env(Name, Def) ->
+  ew_os:get_binary_env(Name, Def).
+
+%% Assertions
+assert(Expression, Arg, Error) ->
+  ew_assertions:assert(Expression, Arg, Error).
+
+is_boolean(V) ->
+  ew_assertions:is_boolean(V).
+
+is_number(V) ->
+  ew_assertions:is_number(V).
+
+is_integer(V) ->
+  ew_assertions:is_number(V).
+
+is_positive_int(V) ->
+  ew_assertions:is_positive_int(V).
+
+is_non_negative_int(V) ->
+  ew_assertions:is_non_negative_int(V).
+
+is_string(V) ->
+  ew_assertions:is_string(V).
+
+is_proplist(V) ->
+  ew_assertions:is_proplist(V).
