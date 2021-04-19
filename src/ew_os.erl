@@ -12,16 +12,19 @@
 -include("erlwater.hrl").
 
 %% API
--export([get_env/1, get_bool_env/1,
+-export([get_env/1, get_env/2, get_bool_env/1,
          get_int_env/1, get_int_env/2,
          get_float_env/1, get_float_env/2,
          get_binary_env/1, get_binary_env/2]).
 
 get_env(Name) ->
+  ?MODULE:get_env(Name, ?Undef).
+
+get_env(Name, Def) ->
   convert(
     fun(Val) ->
       erlwater:to_binary(Val)
-    end, Name, ?Undef, "binary").
+    end, Name, Def, "binary").
 
 get_bool_env(Name) ->
   convert(
@@ -36,7 +39,7 @@ get_int_env(Name, Def) when is_integer(Def); Def == ?Undef ->
   convert(
     fun(Val) ->
       erlwater:to_integer(Val)
-    end, Name, ?Undef, "integer").
+    end, Name, Def, "integer").
 
 get_float_env(Name) ->
   ?MODULE:get_float_env(Name, ?Undef).
@@ -45,7 +48,7 @@ get_float_env(Name, Def) when is_float(Def); Def == ?Undef ->
   convert(
     fun(Val) ->
       erlwater:to_float(Val)
-    end, Name, ?Undef, "float").
+    end, Name, Def, "float").
 
 get_binary_env(Name) ->
   ?MODULE:get_binary_env(Name, ?Undef).
@@ -54,7 +57,7 @@ get_binary_env(Name, Def) when is_binary(Def); Def == ?Undef ->
   convert(
     fun(Val) ->
       erlwater:to_binary(Val)
-    end, Name, ?Undef, "binary").
+    end, Name, Def, "binary").
 
 convert(ConvertFun, EnvName, Def, ExpectedType) ->
   Value = os:getenv(EnvName, Def),
