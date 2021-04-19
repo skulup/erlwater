@@ -10,9 +10,11 @@
 -author("Alpha Umaru Shaw").
 
 -include("erlwater.hrl").
+-include_lib("kernel/include/inet.hrl").
 
 %% API
 -export([ip_to_binary/1, get_mac_address/0, activate_socket/1, optimize_socket/1]).
+-export([logical_to_physical_address/1, logical_to_physical_addresses/1]).
 
 
 -spec ip_to_binary(inet:ip_address() | undefined |
@@ -52,3 +54,42 @@ optimize_socket(Sock) ->
   inet:getopts(Sock, [sndbuf, recbuf]), %% assert
   ok = inet:setopts(Sock, [{buffer, max(RecBufferSize, SndBufferSize)}]),
   Sock.
+
+
+logical_to_physical_address(Address) ->
+  case logical_to_physical_addresses(Address) of
+    [] -> {error, address_not_available};
+    [H | _] -> H;
+    Else -> Else
+  end.
+
+logical_to_physical_addresses(Address) when is_binary(Address) ->
+  logical_to_physical_addresses(binary_to_list(Address));
+logical_to_physical_addresses(Address) when is_list(Address) ->
+  case resolve_address(Address) of
+    {error, Reason} ->
+      {error, {Reason, Address}};
+    {_, _, Addresses} ->
+      Addresses
+  end.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%     Internal    %%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+resolve_address(Host) ->
+  Host1 = erlwater:trim(Host),
+  case resolve_address1(Host1) of
+    {error, _} = Err ->
+      Err;
+    {Hostname, AddressType, Addresses} ->
+      {Hostname, AddressType, Addresses}
+  end.
+
+resolve_address1(Hostname) ->
+  case inet:gethostbyname(Hostname) of
+    {error, _} = Err ->
+      Err;
+    {ok, #hostent{h_name = Host, h_addrtype = AddressType, h_addr_list = Addresses}} ->
+      {Host, AddressType, Addresses}
+  end.

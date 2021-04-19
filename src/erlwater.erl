@@ -3,6 +3,7 @@
 -include("erlwater.hrl").
 
 -export([round/2]).
+-export([trim/1]).
 -export([to_integer/1, to_float/1, to_boolean/1, to_binary/1, to_base64/1, base64_to_term/1, safe_binary_to_term/1]).
 -export([assert/3, is_boolean/1, is_number/1, is_integer/1, is_string/1, is_proplist/1, is_positive_int/1, is_non_negative_int/1]).
 -export([get_env/1, get_bool_env/1, get_int_env/1, get_int_env/2, get_float_env/1, get_float_env/2, get_binary_env/1, get_binary_env/2]).
@@ -35,6 +36,10 @@ base64_to_term(V) ->
 
 safe_binary_to_term(B) ->
   ew_convert:safe_binary_to_term(B).
+
+%% Strings
+trim(S) ->
+  ew_string:trim(S).
 
 %% Applications Environment Variables
 
