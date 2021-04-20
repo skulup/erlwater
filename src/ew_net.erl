@@ -13,7 +13,7 @@
 -include_lib("kernel/include/inet.hrl").
 
 %% API
--export([ip_to_binary/1, get_mac_address/0, activate_socket/1, optimize_socket/1]).
+-export([ip_to_binary/1, get_mac_address/0, activate_socket/1, partial_activate_socket/1, optimize_socket/1]).
 -export([logical_to_physical_address/1, logical_to_physical_addresses/1]).
 
 
@@ -44,6 +44,10 @@ filter_interfaces(Props) ->
     [0, 0, 0, 0, 0, 0] -> false;
     _ -> true
   end.
+
+partial_activate_socket(Sock) ->
+  inet:setopts(Sock, [{active, once}]),
+  Sock.
 
 activate_socket(Sock) ->
   ok = inet:setopts(Sock, [{active, true}]),
