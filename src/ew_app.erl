@@ -27,7 +27,7 @@ get_int_env(App, Name, Def) when is_integer(Def); Def == ?Undef ->
   convert(
     fun(Val) ->
       erlwater:to_integer(Val)
-    end, App, Name, ?Undef, "integer").
+    end, App, Name, Def, "integer").
 
 get_float_env(App, Name) ->
   ?MODULE:get_float_env(App, Name, ?Undef).
@@ -36,7 +36,7 @@ get_float_env(App, Name, Def) when is_float(Def); Def == ?Undef ->
   convert(
     fun(Val) ->
       erlwater:to_float(Val)
-    end, App, Name, ?Undef, "float").
+    end, App, Name, Def, "float").
 
 get_binary_env(App, Name) ->
   ?MODULE:get_binary_env(App, Name, ?Undef).
@@ -45,7 +45,7 @@ get_binary_env(App, Name, Def) when is_binary(Def); Def == ?Undef ->
   convert(
     fun(Val) ->
       erlwater:to_binary(Val)
-    end, App, Name, ?Undef, "binary").
+    end, App, Name, Def, "binary").
 
 convert(ConvertFun, App, Key, Def, ExpectedType) ->
   Value = get_env(App, Key, Def),
