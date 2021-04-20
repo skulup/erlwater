@@ -57,6 +57,8 @@ to_boolean("1") ->
   true.
 
 
+to_binary(?Undef) ->
+  ?Undef;
 to_binary(B) when is_binary(B) ->
   B;
 to_binary(S) when is_list(S) ->
